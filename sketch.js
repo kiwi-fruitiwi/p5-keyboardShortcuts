@@ -4,6 +4,11 @@
  *
  *  component project for recognizing keyboard input combinations such as
  *  shift+s, ctrl+alt+e, or ctrl+x for keyboard shortcuts in other projects
+ *
+ *  ☒ get basic keyPress switch statement working → action dictionary
+ *  ☐ try modifier keys
+ *  ☐ hardcode one set with icons flashing up
+ *  ☐ 2.5s with gcd "bar"
  */
 
 let font
@@ -48,6 +53,21 @@ function keyPressed() {
         noLoop()
         instructions.html(`<pre>
             sketch stopped</pre>`)
+    }
+
+    switch (key) {
+        case 'd':
+            if (keyIsDown(CONTROL)) {
+                console.log('hi')
+                return false
+            }
+        case 'w':
+            if (keyIsDown(CONTROL)) {
+                console.log(`preventing window close hotkey: ^w`)
+                return false
+            }
+        default:
+            console.log(key)
     }
 }
 
