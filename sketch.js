@@ -15,6 +15,8 @@ let font
 let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
+let player
+let abilityName
 
 function preload() {
     font = loadFont('data/consola.ttf')
@@ -26,6 +28,9 @@ function setup() {
     cnv.parent('#canvas')
     colorMode(HSB, 360, 100, 100, 100)
     textFont(font, 14)
+
+    player = new p5.Vector(width/2, height/2)
+    abilityName = 'none'
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -39,10 +44,24 @@ function setup() {
 function draw() {
     background(234, 34, 24)
 
+    /* WASD movement */
+    if ((keyIsPressed === true) && (key === 'a'))
+        player.x -= 1
+    if ((keyIsPressed === true) && (key === 'd'))
+        player.x += 1
+    if ((keyIsPressed === true) && (key === 'w'))
+        player.y -= 1
+    if ((keyIsPressed === true) && (key === 's'))
+        player.y += 1
+
+    stroke(0, 0, 100, 100)
+    fill(0, 0, 100, 20)
+    circle(player.x, player.y, 20)
 
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`frameCount: ${frameCount}`, 2)
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    debugCorner.setText(`ability: ${abilityName}`, 0)
     debugCorner.show()
 }
 
@@ -58,14 +77,18 @@ function keyPressed() {
     switch (key) {
         case 'd':
             if (keyIsDown(CONTROL)) {
-                console.log('hi')
-                return false
+                abilityName = 'swiftcast'
+                return false  /* chrome opens bookmark dialog */
             }
-        case 'w':
+            break
+        case 'e':
             if (keyIsDown(CONTROL)) {
-                console.log(`preventing window close hotkey: ^w`)
-                return false
+                abilityName = 'prognosis'
+                return false  /* chrome opens address bar dropdown */
+            } else {
+                abilityName = 'dosis'
             }
+            break
         default:
             console.log(key)
     }
