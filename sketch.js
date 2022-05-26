@@ -17,6 +17,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 let player
 let abilityName
+let eukrasia /* toggle for eukrasian abilities */
 
 function preload() {
     font = loadFont('data/consola.ttf')
@@ -44,23 +45,29 @@ function setup() {
 function draw() {
     background(234, 34, 24)
 
-    /* WASD movement */
-    if ((keyIsPressed === true) && (key === 'a'))
-        player.x -= 1
-    if ((keyIsPressed === true) && (key === 'd'))
-        player.x += 1
-    if ((keyIsPressed === true) && (key === 'w'))
-        player.y -= 1
-    if ((keyIsPressed === true) && (key === 's'))
-        player.y += 1
+    /* WASD movement a=65, d=68, w=87, s=83; handles multiple key presses */
+    /* todo insert space to continue current direction for .5s */
+    if (!keyIsDown(17) && !keyIsDown(16)) {
+        /* make sure control or shift are not held */
+        if (keyIsDown(65))
+            player.x -= 1
+        if (keyIsDown(68))
+            player.x += 1
+        if (keyIsDown(87))
+            player.y -= 1
+        if (keyIsDown(83))
+            player.y += 1
+    }
 
-    stroke(0, 0, 100, 100)
-    fill(0, 0, 100, 20)
-    circle(player.x, player.y, 20)
+    stroke(0, 0, 100, 50)
+    strokeWeight(1)
+    fill(0, 0, 100, 10)
+    circle(player.x, player.y, 32)
 
     /* debugCorner needs to be last so its z-index is highest */
-    debugCorner.setText(`frameCount: ${frameCount}`, 2)
-    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 1)
+    debugCorner.setText(`frameCount: ${frameCount}`, 3)
+    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 2)
+    debugCorner.setText(`eukrasia: ${eukrasia}`, 1)
     debugCorner.setText(`ability: ${abilityName}`, 0)
     debugCorner.show()
 }
@@ -75,6 +82,10 @@ function keyPressed() {
     }
 
     switch (key) {
+        case 'q':
+            abilityName = 'eukrasia'
+            eukrasia = true
+            break
         case 'd':
             if (keyIsDown(CONTROL)) {
                 abilityName = 'swiftcast'
@@ -91,6 +102,12 @@ function keyPressed() {
             break
         default:
             console.log(key)
+    }
+
+    /* prototype for eukrasian dosis */
+    if (key === 'e' && eukrasia === true) {
+        abilityName = 'eukrasian dosis!'
+        eukrasia = false
     }
 }
 
