@@ -59,10 +59,10 @@ function draw() {
             player.y += 1
     }
 
-    stroke(0, 0, 100, 50)
+    stroke(0, 0, 100, 70)
     strokeWeight(1)
-    fill(0, 0, 100, 10)
-    circle(player.x, player.y, 32)
+    fill(91, 100, 100, 30)
+    rect(player.x, player.y, 32, 32, 10)
 
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`frameCount: ${frameCount}`, 3)
@@ -82,6 +82,16 @@ function keyPressed() {
     }
 
     switch (key) {
+        case 'w': /* holos is sadly ctrl+w */
+            break
+        case 's': /* soteria shift+s, krasis ctrl+s */
+            if (keyIsDown(CONTROL)) {
+                abilityName = 'krasis'
+                return false
+            }
+            break
+        case 'a': /* rhizomata */
+            break
         case 'q':
             abilityName = 'eukrasia'
             eukrasia = true
@@ -98,7 +108,34 @@ function keyPressed() {
                 return false  /* chrome opens address bar dropdown */
             } else {
                 abilityName = 'dosis'
-            }
+            } /* add zoe as shift+e */
+            break
+        case 'r': /* toxikon, phlegma */
+            abilityName = 'toxikon'
+            break
+        case 'f': /* diagnosis, pneuma */
+            break
+        case 't': /* pepsis */
+            break
+        case 'g': /* druochole */
+            break
+        case 'v': /* taurochole, kerachole */
+            break
+        case 'c': /* ixochole, physis */
+            break
+        case 'b': /* esuna */
+            break
+        case 'x': /* haima, lucid dreaming */
+            break
+        case '1': /* icarus */
+            break
+        case '2': /* egeiro */
+            break
+        case '3': /* dyskrasia */
+            break
+        case '4': /* rescue */
+            break
+        case '5': /* surecast */
             break
         default:
             console.log(key)
