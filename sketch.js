@@ -10,7 +10,9 @@
  *  ☒ add shells for all sage abilities
  *  ☒ implement ^e→prognosis, e→dosis, +e→zoe ^+e→panhaima
  *  ☐ kerachole expanding circle animation demo
+ *  ☒ gcd bar prototype
  *  ☐ 2.5s dumb gcd 'bar'
+ *  ☐ autorun, jump
  *  ☐ hardcode one set with icons flashing up
  */
 
@@ -24,6 +26,7 @@ let abilityName
 let eukrasia = false /* toggle for eukrasian abilities */
 
 let lastGcdActionTimestamp
+let gcdProgress
 const GCD_DURATION = 2500
 
 
@@ -42,6 +45,7 @@ function setup() {
     player = new p5.Vector(width/2, height/2)
     abilityName = 'none'
     lastGcdActionTimestamp = 0
+    gcdProgress = 0
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -69,19 +73,29 @@ function draw() {
         height - GCD_BAR_BOTTOM_MARGIN - GCD_BAR_HEIGHT,
         GCD_BAR_WIDTH, /* should be mapped */
         GCD_BAR_HEIGHT,
-        3)
+        1)
 
-    let gcdProgress = map(mouseX, 0, width, 0, GCD_BAR_WIDTH)
-    gcdProgress = constrain(gcdProgress, 0, GCD_BAR_WIDTH)
+
+    // let gcdProgress = map(mouseX, width - GCD_BAR_RIGHT_MARGIN - GCD_BAR_WIDTH,
+    //     width, 0, GCD_BAR_WIDTH)
+    // gcdProgress = constrain(gcdProgress, 0, GCD_BAR_WIDTH)
+
+    /* progress should be number of seconds since last gcd */
+    gcdProgress = millis() - lastGcdActionTimestamp
 
     noStroke()
     // fill(91, 100, 100, 30)
     fill(0, 0, 100, 30)
     rect(width - GCD_BAR_RIGHT_MARGIN - GCD_BAR_WIDTH,
         height - GCD_BAR_BOTTOM_MARGIN - GCD_BAR_HEIGHT,
-        gcdProgress, /* should be mapped */
+        map(gcdProgress, 0, GCD_DURATION, 0, GCD_BAR_WIDTH),
         GCD_BAR_HEIGHT,
-        3)
+        1)
+
+    /* reset progress when it reaches the full gcd duration */
+    if (gcdProgress >= GCD_DURATION)
+        lastGcdActionTimestamp = millis()
+
 
     /* draw tick mark for queueing */
 
