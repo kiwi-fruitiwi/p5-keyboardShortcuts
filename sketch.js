@@ -18,7 +18,7 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 let player
 let abilityName
-let eukrasia /* toggle for eukrasian abilities */
+let eukrasia = false /* toggle for eukrasian abilities */
 
 let lastGcdActionTimestamp
 const GCD = 2500
@@ -42,7 +42,7 @@ function setup() {
     /* initialize instruction div */
     instructions = select('#ins')
     instructions.html(`<pre>
-        numpad 1 → freeze sketch</pre>`)
+        numpad 1 → 🥝 freeze sketch 🐳</pre>`)
 
     debugCorner = new CanvasDebugCorner(5)
 }
@@ -72,11 +72,15 @@ function draw() {
     rect(player.x, player.y, 32, 32, 10)
 
     /* debugCorner needs to be last so its z-index is highest */
+    debugCorner.setText(`position: [${player.x}, ${player.y}]`, 4)
     debugCorner.setText(`frameCount: ${frameCount}`, 3)
     debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 2)
     debugCorner.setText(`eukrasia: ${eukrasia}`, 1)
     debugCorner.setText(`ability: ${abilityName}`, 0)
     debugCorner.show()
+
+    if (frameCount > 3000)
+        noLoop()
 }
 
 
@@ -115,18 +119,40 @@ function keyPressed() {
                 return false  /* chrome opens bookmark dialog */
             }
             break
-        case 'e':
+        case 'e': /* ^e→prognosis, e→dosis, +e→zoe ^+e→panhaima */
+        case 'E':
             if (keyIsDown(CONTROL)) {
-                abilityName = 'prognosis'
-                return false  /* chrome opens address bar dropdown */
-            } else {
+                if (keyIsDown(SHIFT)) { /* ^+e→panhaima */
+                    abilityName = 'panhaima'
+                } else { /* ^e→prognosis */
+                    if (eukrasia === true) {
+                        abilityName = 'eukrasian prognosis!'
+                        eukrasia = false
+                    } else
+                        abilityName = 'prognosis'
+                }
+                return false/* chrome opens address bar dropdown */
+            } else if (keyIsDown(SHIFT)) {
+                abilityName = 'zoe'
+            } else if (eukrasia) {
+                abilityName = 'eukrasian dosis!'
+                eukrasia = false
+            } else
                 abilityName = 'dosis'
-            } /* add zoe as shift+e */
             break
         case 'r': /* toxikon, phlegma */
             abilityName = 'toxikon'
             break
         case 'f': /* diagnosis, pneuma */
+            if (keyIsDown(CONTROL)) {
+                abilityName = 'pneuma'
+                return false
+            } else if (eukrasia) {
+                abilityName = 'eukrasian diagnosis!'
+                eukrasia = false
+            } else
+                abilityName = 'diagnosis'
+
             break
         case 't': /* pepsis */
             break
@@ -152,12 +178,6 @@ function keyPressed() {
             break
         default:
             console.log(key)
-    }
-
-    /* prototype for eukrasian dosis */
-    if (key === 'e' && eukrasia === true) {
-        abilityName = 'eukrasian dosis!'
-        eukrasia = false
     }
 }
 
