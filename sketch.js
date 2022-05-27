@@ -21,7 +21,7 @@ let abilityName
 let eukrasia = false /* toggle for eukrasian abilities */
 
 let lastGcdActionTimestamp
-const GCD = 2500
+const GCD_DURATION = 2500
 
 
 function preload() {
@@ -71,16 +71,34 @@ function draw() {
     fill(91, 100, 100, 40)
     rect(player.x, player.y, 32, 32, 10)
 
+    let fps = `${frameRate().toFixed(0)}`
     /* debugCorner needs to be last so its z-index is highest */
-    debugCorner.setText(`position: [${player.x}, ${player.y}]`, 4)
-    debugCorner.setText(`frameCount: ${frameCount}`, 3)
-    debugCorner.setText(`fps: ${frameRate().toFixed(0)}`, 2)
-    debugCorner.setText(`eukrasia: ${eukrasia}`, 1)
-    debugCorner.setText(`ability: ${abilityName}`, 0)
+    debugCorner.setText(`position → [${player.x}, ${player.y}]`, 3)
+    debugCorner.setText(`frameCount → ${frameCount}, fps → ${fps}`, 2)
+    debugCorner.setText(`eukrasia → ${eukrasia}`, 1)
+    debugCorner.setText(`ability → ${abilityName}`, 0)
     debugCorner.show()
 
     if (frameCount > 3000)
         noLoop()
+}
+
+
+/* starts the GCD lock. called when a GCD ability is activated */
+function activateGCD() {
+
+}
+
+
+/* starts an offGCD ability; usually you can weave two oGCDs */
+function activateOffGCD() {
+
+}
+
+
+/* if the GCD isn't available, we'll need to queue the next ability */
+function isGcdAvailable() {
+    return millis() - lastGcdActionTimestamp > GCD_DURATION
 }
 
 
@@ -120,7 +138,7 @@ function keyPressed() {
             }
             break
         case 'e': /* ^e→prognosis, e→dosis, +e→zoe ^+e→panhaima */
-        case 'E':
+        case 'E': /* fall through; capslock+e gives 'E'. SHIFT check required*/
             if (keyIsDown(CONTROL)) {
                 if (keyIsDown(SHIFT)) { /* ^+e→panhaima */
                     abilityName = 'panhaima'
