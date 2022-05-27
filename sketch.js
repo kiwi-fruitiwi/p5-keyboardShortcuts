@@ -9,10 +9,13 @@
  *  ☒ try modifier keys
  *  ☒ add shells for all sage abilities
  *  ☒ implement ^e→prognosis, e→dosis, +e→zoe ^+e→panhaima
- *  ☐ kerachole expanding circle animation demo
  *  ☒ gcd bar prototype
- *  ☐ 2.5s dumb gcd 'bar'
+ *  ☒ 2.5s dumb gcd auto-filling 'bar'
+ *  ☐ encapsulate gcd bar
  *  ☐ autorun, jump
+ *  ☐ kerachole expanding circle animation demo
+ *  ☐ enemies
+ *  ☐ flying combat text → research ⑭ first
  *  ☐ hardcode one set with icons flashing up
  */
 
@@ -62,7 +65,7 @@ function draw() {
 
     /* GCD bar, bottom right */
     const GCD_BAR_WIDTH = 350
-    const GCD_BAR_HEIGHT = 10
+    const GCD_BAR_HEIGHT = 14
     const GCD_BAR_RIGHT_MARGIN = 10
     const GCD_BAR_BOTTOM_MARGIN = 10
 
@@ -92,12 +95,21 @@ function draw() {
         GCD_BAR_HEIGHT,
         1)
 
-    /* reset progress when it reaches the full gcd duration */
+    /* reset progress when it reaches the full gcd duration
+        demo purposes. real behavior: reset position, wait for next activateGCD
+     */
     if (gcdProgress >= GCD_DURATION)
         lastGcdActionTimestamp = millis()
 
+    /* draw tick mark for queueing: queue happens at 75% of the way */
+    strokeWeight(1)
+    stroke(0, 0, 100, 50)
+    const thresholdX = width - GCD_BAR_RIGHT_MARGIN - GCD_BAR_WIDTH/4
+    const thresholdYTop = height - GCD_BAR_BOTTOM_MARGIN - GCD_BAR_HEIGHT
+    const thresholdYBottom = height - GCD_BAR_BOTTOM_MARGIN
+    line(thresholdX, thresholdYTop +1,
+        thresholdX, thresholdYBottom -1)
 
-    /* draw tick mark for queueing */
 
     /* WASD movement a=65, d=68, w=87, s=83; handles multiple key presses */
     /* todo insert space to continue current direction for .5s */
