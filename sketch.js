@@ -8,8 +8,10 @@
  *  ☒ get basic keyPress switch statement working → action dictionary
  *  ☒ try modifier keys
  *  ☒ add shells for all sage abilities
+ *  ☒ implement ^e→prognosis, e→dosis, +e→zoe ^+e→panhaima
+ *  ☐ kerachole expanding circle animation demo
+ *  ☐ 2.5s dumb gcd 'bar'
  *  ☐ hardcode one set with icons flashing up
- *  ☐ 2.5s with gcd "bar"
  */
 
 let font
@@ -17,6 +19,7 @@ let instructions
 let debugCorner /* output debug text in the bottom left corner of the canvas */
 
 let player
+let playerIcon
 let abilityName
 let eukrasia = false /* toggle for eukrasian abilities */
 
@@ -26,6 +29,7 @@ const GCD_DURATION = 2500
 
 function preload() {
     font = loadFont('data/consola.ttf')
+    playerIcon = loadImage('sage96px.png')
 }
 
 
@@ -45,11 +49,41 @@ function setup() {
         numpad 1 → 🥝 freeze sketch 🐳</pre>`)
 
     debugCorner = new CanvasDebugCorner(5)
+    playerIcon.resize(32, 0)
 }
 
 
 function draw() {
     background(234, 34, 24)
+
+    /* GCD bar, bottom right */
+    const GCD_BAR_WIDTH = 350
+    const GCD_BAR_HEIGHT = 10
+    const GCD_BAR_RIGHT_MARGIN = 10
+    const GCD_BAR_BOTTOM_MARGIN = 10
+
+    strokeWeight(1.25)
+    stroke(0, 0, 100, 100)
+    noFill()
+    rect(width - GCD_BAR_RIGHT_MARGIN - GCD_BAR_WIDTH,
+        height - GCD_BAR_BOTTOM_MARGIN - GCD_BAR_HEIGHT,
+        GCD_BAR_WIDTH, /* should be mapped */
+        GCD_BAR_HEIGHT,
+        3)
+
+    let gcdProgress = map(mouseX, 0, width, 0, GCD_BAR_WIDTH)
+    gcdProgress = constrain(gcdProgress, 0, GCD_BAR_WIDTH)
+
+    noStroke()
+    // fill(91, 100, 100, 30)
+    fill(0, 0, 100, 30)
+    rect(width - GCD_BAR_RIGHT_MARGIN - GCD_BAR_WIDTH,
+        height - GCD_BAR_BOTTOM_MARGIN - GCD_BAR_HEIGHT,
+        gcdProgress, /* should be mapped */
+        GCD_BAR_HEIGHT,
+        3)
+
+    /* draw tick mark for queueing */
 
     /* WASD movement a=65, d=68, w=87, s=83; handles multiple key presses */
     /* todo insert space to continue current direction for .5s */
@@ -66,12 +100,14 @@ function draw() {
             player.y += MOVEMENT_PER_FRAME
     }
 
-    strokeWeight(1.5)
-    stroke(0, 0, 100)
-    fill(91, 100, 100, 40)
-    rect(player.x, player.y, 32, 32, 10)
+    // strokeWeight(1.5)
+    // stroke(0, 0, 100)
+    // fill(91, 100, 100, 40)
+    // rect(player.x, player.y, 32, 32, 10)
+    image(playerIcon, player.x, player.y)
 
     let fps = `${frameRate().toFixed(0)}`
+
     /* debugCorner needs to be last so its z-index is highest */
     debugCorner.setText(`position → [${player.x}, ${player.y}]`, 3)
     debugCorner.setText(`frameCount → ${frameCount}, fps → ${fps}`, 2)
@@ -117,6 +153,9 @@ function keyPressed() {
 
 
     switch (key) {
+        case 'y': /* testing new functionality */
+
+            break
         case 'w': /* holos is sadly ctrl+w */
             break
         case 's': /* soteria shift+s, krasis ctrl+s */
