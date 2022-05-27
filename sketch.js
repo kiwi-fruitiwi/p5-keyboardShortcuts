@@ -11,6 +11,9 @@
  *  ☒ implement ^e→prognosis, e→dosis, +e→zoe ^+e→panhaima
  *  ☒ gcd bar prototype
  *  ☒ 2.5s dumb gcd auto-filling 'bar'
+ *  ☒ activateGCD() via 'y' hotkey
+ *
+ *  ☐ cast bar!
  *  ☐ encapsulate gcd bar
  *  ☐ autorun, jump
  *  ☐ kerachole expanding circle animation demo
@@ -30,6 +33,7 @@ let eukrasia = false /* toggle for eukrasian abilities */
 
 let lastGcdActionTimestamp
 let gcdProgress
+let started /* toggle for whether we've started our first GCD */
 const GCD_DURATION = 2500
 
 
@@ -47,8 +51,9 @@ function setup() {
 
     player = new p5.Vector(width/2, height/2)
     abilityName = 'none'
-    lastGcdActionTimestamp = 0
+    lastGcdActionTimestamp = GCD_DURATION /* arbitrarily large number */
     gcdProgress = 0
+    started = false
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -64,8 +69,8 @@ function draw() {
     background(234, 34, 24)
 
     /* GCD bar, bottom right */
-    const GCD_BAR_WIDTH = 350
-    const GCD_BAR_HEIGHT = 14
+    const GCD_BAR_WIDTH = 300
+    const GCD_BAR_HEIGHT = 10
     const GCD_BAR_RIGHT_MARGIN = 10
     const GCD_BAR_BOTTOM_MARGIN = 10
 
@@ -83,8 +88,16 @@ function draw() {
     //     width, 0, GCD_BAR_WIDTH)
     // gcdProgress = constrain(gcdProgress, 0, GCD_BAR_WIDTH)
 
-    /* progress should be number of seconds since last gcd */
-    gcdProgress = millis() - lastGcdActionTimestamp
+    /* progress should be number of seconds since last gcd
+        if it's been more than a full GCD, display no progress
+     */
+    if (started) {
+        if (millis() - lastGcdActionTimestamp >= GCD_DURATION) {
+            gcdProgress = 0
+        } else {
+            gcdProgress = millis() - lastGcdActionTimestamp
+        }
+    }
 
     noStroke()
     // fill(91, 100, 100, 30)
@@ -95,14 +108,8 @@ function draw() {
         GCD_BAR_HEIGHT,
         1)
 
-    /* reset progress when it reaches the full gcd duration
-        demo purposes. real behavior: reset position, wait for next activateGCD
-     */
-    if (gcdProgress >= GCD_DURATION)
-        lastGcdActionTimestamp = millis()
-
     /* draw tick mark for queueing: queue happens at 75% of the way */
-    strokeWeight(1)
+    strokeWeight(2)
     stroke(0, 0, 100, 50)
     const thresholdX = width - GCD_BAR_RIGHT_MARGIN - GCD_BAR_WIDTH/4
     const thresholdYTop = height - GCD_BAR_BOTTOM_MARGIN - GCD_BAR_HEIGHT
@@ -148,7 +155,12 @@ function draw() {
 
 /* starts the GCD lock. called when a GCD ability is activated */
 function activateGCD() {
+    /* real behavior: reset position, wait for next activateGCD
+     */
+    if (!started)
+        started = true
 
+    lastGcdActionTimestamp = millis()
 }
 
 
@@ -161,6 +173,13 @@ function activateOffGCD() {
 /* if the GCD isn't available, we'll need to queue the next ability */
 function isGcdAvailable() {
     return millis() - lastGcdActionTimestamp > GCD_DURATION
+}
+
+
+/* start GCD action and trigger GCD */
+function startAction(name) {
+    abilityName = name
+    activateGCD()
 }
 
 
@@ -180,7 +199,7 @@ function keyPressed() {
 
     switch (key) {
         case 'y': /* testing new functionality */
-
+            activateGCD()
             break
         case 'w': /* holos is sadly ctrl+w */
             break
@@ -190,7 +209,7 @@ function keyPressed() {
                 return false
             }
             break
-        case 'a': /* rhizomata */
+        case 'a': /* ^a → rhizomata */
             break
         case 'q':
             abilityName = 'eukrasia'
@@ -211,8 +230,9 @@ function keyPressed() {
                     if (eukrasia === true) {
                         abilityName = 'eukrasian prognosis!'
                         eukrasia = false
-                    } else
-                        abilityName = 'prognosis'
+                    } else {
+                        startAction('prognosis')
+                    }
                 }
                 return false/* chrome opens address bar dropdown */
             } else if (keyIsDown(SHIFT)) {
@@ -220,21 +240,23 @@ function keyPressed() {
             } else if (eukrasia) {
                 abilityName = 'eukrasian dosis!'
                 eukrasia = false
-            } else
-                abilityName = 'dosis'
+            } else {
+                startAction('dosis')
+            }
             break
         case 'r': /* toxikon, phlegma */
             abilityName = 'toxikon'
             break
         case 'f': /* diagnosis, pneuma */
             if (keyIsDown(CONTROL)) {
-                abilityName = 'pneuma'
+                startAction('pneuma')
                 return false
             } else if (eukrasia) {
                 abilityName = 'eukrasian diagnosis!'
                 eukrasia = false
-            } else
-                abilityName = 'diagnosis'
+            } else {
+                startAction('diagnosis')
+            }
 
             break
         case 't': /* pepsis */
