@@ -6,7 +6,8 @@
  *  shift+s, ctrl+alt+e, or ctrl+x for keyboard shortcuts in other projects
  *
  *  ☒ get basic keyPress switch statement working → action dictionary
- *  ☐ try modifier keys
+ *  ☒ try modifier keys
+ *  ☒ add shells for all sage abilities
  *  ☐ hardcode one set with icons flashing up
  *  ☐ 2.5s with gcd "bar"
  */
@@ -18,6 +19,10 @@ let debugCorner /* output debug text in the bottom left corner of the canvas */
 let player
 let abilityName
 let eukrasia /* toggle for eukrasian abilities */
+
+let lastGcdActionTimestamp
+const GCD = 2500
+
 
 function preload() {
     font = loadFont('data/consola.ttf')
@@ -32,6 +37,7 @@ function setup() {
 
     player = new p5.Vector(width/2, height/2)
     abilityName = 'none'
+    lastGcdActionTimestamp = 0
 
     /* initialize instruction div */
     instructions = select('#ins')
@@ -47,21 +53,22 @@ function draw() {
 
     /* WASD movement a=65, d=68, w=87, s=83; handles multiple key presses */
     /* todo insert space to continue current direction for .5s */
+    const MOVEMENT_PER_FRAME = 2
     if (!keyIsDown(17) && !keyIsDown(16)) {
         /* make sure control or shift are not held */
         if (keyIsDown(65))
-            player.x -= 1
+            player.x -= MOVEMENT_PER_FRAME
         if (keyIsDown(68))
-            player.x += 1
+            player.x += MOVEMENT_PER_FRAME
         if (keyIsDown(87))
-            player.y -= 1
+            player.y -= MOVEMENT_PER_FRAME
         if (keyIsDown(83))
-            player.y += 1
+            player.y += MOVEMENT_PER_FRAME
     }
 
-    stroke(0, 0, 100, 70)
-    strokeWeight(1)
-    fill(91, 100, 100, 30)
+    strokeWeight(1.5)
+    stroke(0, 0, 100)
+    fill(91, 100, 100, 40)
     rect(player.x, player.y, 32, 32, 10)
 
     /* debugCorner needs to be last so its z-index is highest */
@@ -80,6 +87,12 @@ function keyPressed() {
         instructions.html(`<pre>
             sketch stopped</pre>`)
     }
+
+    /* make an ability dictionary with only GCD commands?
+        lastGcdActionTimestamp = millis()
+        maybe this belongs in every case statement that's a GCD action
+    */
+
 
     switch (key) {
         case 'w': /* holos is sadly ctrl+w */
